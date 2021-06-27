@@ -43,8 +43,6 @@ set binary
 set noeol
 set nocompatible
 set colorcolumn=80
-"set visualbell
-"set noerrorbells
 
 syntax on
 filetype plugin on
