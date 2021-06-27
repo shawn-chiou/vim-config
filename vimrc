@@ -24,7 +24,6 @@ Plug 'godlygeek/tabular'
 call plug#end()
 
 map <F2> :Bufferlist<CR>
-"map <F3> :Vexplore<CR>
 "nmap <C-n> :NERDTreeToggle<CR>
 nmap <F3> :NERDTreeToggle<CR>
 nmap <F8> :TagbarToggle<CR>
@@ -49,16 +48,6 @@ set colorcolumn=80
 
 syntax on
 filetype plugin on
-
-"let g:netrw_banner=0
-"let g:netrw_liststyle=3
-"let g:netrw_browse_split=4
-"let g:netrw_altv=1
-"let g:netrw_winsize=20
-"augroup PrjectDrawer
-"  autocmd!
-"  autocmd VimEnter * :Vexplore
-"augroup END
 
 "g:vim_markdown_folding_disabled
 let mapleader=','
