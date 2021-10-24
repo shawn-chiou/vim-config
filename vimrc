@@ -1,32 +1,29 @@
 "automated installation of vimplug if not installed
-if empty(glob('~/.local/share/nvim/site/autoload/plug.vim'))
-    silent !curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs
-        \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-    autocmd VimEnter * PlugInstall --sync | source ~/.config/nvim/init.vim
+if empty(glob('~/.vim/autoload/plug.vim'))
+    silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    autocmd VimEnter * PlugInstall --sync | source ~/.vimrc
 endif
 
-call plug#begin('~/.config/nvim/plugged')
+call plug#begin('~/.vim/plugged')
 
-"plugins here, coc for example
-"Plug 'neoclide/coc.nvim', { 'branch': 'release' }
 Plug 'lervag/vimtex'
-Plug 'reedes/vim-pencil'
-Plug 'bling/vim-airline'
+Plug 'vim-scripts/vim-pencil'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 Plug 'scrooloose/nerdTree'
-Plug 'airblade/vim-gitgutter'
 Plug 'preservim/tagbar'
-Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries' }
-Plug 'godlygeek/tabular'
+"Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries' }
 "Plug 'plasticboy/vim-markdown'
 "Plug 'xuhdev/vim-latex-live-preview', { 'for': 'tex' }
 "Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
 
 call plug#end()
 
-map <F2> :Bufferlist<CR>
-"nmap <C-n> :NERDTreeToggle<CR>
 nmap <F3> :NERDTreeToggle<CR>
 nmap <F8> :TagbarToggle<CR>
+nmap <C-n> :bn<CR>
+nmap <C-p> :bp<CR>
 
 set ai
 set background=dark
@@ -47,6 +44,12 @@ set colorcolumn=80
 syntax on
 filetype plugin on
 
+"let g:airline_theme='simple'
+let g:airline_theme='murmur'
+let g:airline_powerline_fonts = 1
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#formatter = 'default'
+
 "g:vim_markdown_folding_disabled
 let mapleader=','
 if exists(":Tabularize")
@@ -56,13 +59,15 @@ if exists(":Tabularize")
   vmap <Leader>a: :Tabularize /:\zs<CR>
 endif
 
-"augroup pencil
-"  autocmd!
-"  autocmd FileType markdown,mkd call pencil#init()
-"  autocmd FileType text         call pencil#init()
-"augroup END
+let g:pencil#wrapModeDefault = 'hard'   " or 'soft'
+augroup pencil
+  autocmd!
+  autocmd FileType markdown,mkd call pencil#init()
+  autocmd FileType textile      call pencil#init()
+  autocmd FileType text         call pencil#init({'wrap': 'hard'})
+augroup END
 
 autocmd BufRead *.htm,*.html,*.jsx,*.js,*.json,*.vue set ai et sw=2 ts=2 softtabstop=2
 autocmd BufRead *.php,*.css,*.scss,*.py set ai et sw=4 ts=4 softtabstop=4
 autocmd BufRead,BufWrite * if ! &bin | silent! %s/\s\+$//ge | endif " Remove any trailing whitespace that is in the file
-"autocmd BufWritePost *.go silent! !ctags -R --exclude=.git* --exclude=docs --exclude=.idea --exclude=testdata --exclude=deploy --exclude=*.yaml --exclude=*.md --exclude=Makefile --exclude=go.* --exclude=*.json .
+autocmd BufWritePost *.go silent! !ctags -R --exclude=.git* --exclude=docs --exclude=.idea --exclude=testdata --exclude=deploy --exclude=*.yaml --exclude=*.md --exclude=Makefile --exclude=go.* --exclude=*.json .
