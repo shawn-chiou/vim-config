@@ -14,6 +14,7 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'scrooloose/nerdTree'
 Plug 'airblade/vim-gitgutter'
 Plug 'preservim/tagbar'
+Plug 'brookhong/cscope.vim'
 "Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries' }
 Plug 'ycm-core/YouCompleteMe', { 'do': './install.py' }
 "Plug 'plasticboy/vim-markdown'
@@ -26,6 +27,24 @@ nmap <F3> :NERDTreeToggle<CR>
 nmap <F8> :TagbarToggle<CR>
 nmap <C-n> :bn<CR>
 nmap <C-p> :bp<CR>
+nnoremap <leader>fa :call CscopeFindInteractive(expand('<cword>'))<CR>
+nnoremap <leader>l :call ToggleLocationList()<CR>
+" s: Find this C symbol
+nnoremap  <leader>fs :call CscopeFind('s', expand('<cword>'))<CR>
+" g: Find this definition
+nnoremap  <leader>fg :call CscopeFind('g', expand('<cword>'))<CR>
+" d: Find functions called by this function
+nnoremap  <leader>fd :call CscopeFind('d', expand('<cword>'))<CR>
+" c: Find functions calling this function
+nnoremap  <leader>fc :call CscopeFind('c', expand('<cword>'))<CR>
+" t: Find this text string
+nnoremap  <leader>ft :call CscopeFind('t', expand('<cword>'))<CR>
+" e: Find this egrep pattern
+nnoremap  <leader>fe :call CscopeFind('e', expand('<cword>'))<CR>
+" f: Find this file
+nnoremap  <leader>ff :call CscopeFind('f', expand('<cword>'))<CR>
+" i: Find files #including this file
+nnoremap  <leader>fi :call CscopeFind('i', expand('<cword>'))<CR>
 
 set ai
 set background=dark
@@ -43,6 +62,7 @@ set binary
 set noeol
 set nocompatible
 set colorcolumn=80
+set tags=./tags,./TAGS,tags;~,TAGS;~
 
 syntax on
 filetype plugin on
