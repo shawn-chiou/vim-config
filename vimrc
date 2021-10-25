@@ -12,8 +12,10 @@ Plug 'vim-scripts/vim-pencil'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'scrooloose/nerdTree'
+Plug 'airblade/vim-gitgutter'
 Plug 'preservim/tagbar'
 "Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries' }
+Plug 'ycm-core/YouCompleteMe', { 'do': './install.py' }
 "Plug 'plasticboy/vim-markdown'
 "Plug 'xuhdev/vim-latex-live-preview', { 'for': 'tex' }
 "Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
@@ -29,7 +31,8 @@ set ai
 set background=dark
 "set cindent
 set cursorline
-"set enc=utf8
+set cursorcolumn
+set enc=utf8
 "set fileencodings=utf-8,big5,utf-bom,iso8859-1
 "set hls
 set laststatus=2
@@ -71,3 +74,4 @@ autocmd BufRead *.htm,*.html,*.jsx,*.js,*.json,*.vue set ai et sw=2 ts=2 softtab
 autocmd BufRead *.php,*.css,*.scss,*.py set ai et sw=4 ts=4 softtabstop=4
 autocmd BufRead,BufWrite * if ! &bin | silent! %s/\s\+$//ge | endif " Remove any trailing whitespace that is in the file
 autocmd BufWritePost *.go silent! !ctags -R --exclude=.git* --exclude=docs --exclude=.idea --exclude=testdata --exclude=deploy --exclude=*.yaml --exclude=*.md --exclude=Makefile --exclude=go.* --exclude=*.json .
+autocmd BufWritePost *.py silent! !ctags -R --exclude=.git* --exclude=docs --exclude=etc --exclude=nvmedebs --exclude=python-wls --exclude=python-wheels --exclude=rdma-core-install --exclude=*.sh --exclude=*.pyc --exclude=*.yaml --exclude=*.md --exclude=Dockerfile* --exclude=*.ini --exclude=*.json --exclude=*.md --exclude=*.txt .
