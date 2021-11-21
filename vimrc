@@ -73,6 +73,13 @@ let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#formatter = 'default'
 
+let g:tex_flavor='latex'
+"let g:vimtex_view_method='zathura'
+let g:vimtex_view_method='okular'
+let g:vimtex_quickfix_mode=0
+set conceallevel=1
+let g:tex_conceal='abdmg'
+
 "g:vim_markdown_folding_disabled
 let mapleader=','
 if exists(":Tabularize")
