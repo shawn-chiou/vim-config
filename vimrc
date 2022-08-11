@@ -14,6 +14,7 @@ Plug 'scrooloose/nerdTree'
 Plug 'airblade/vim-gitgutter'
 Plug 'preservim/tagbar'
 Plug 'brookhong/cscope.vim'
+Plug 'vim-autoformat/vim-autoformat'
 "Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries' }
 Plug 'ycm-core/YouCompleteMe', { 'do': './install.py' }
 "Plug 'plasticboy/vim-markdown'
@@ -23,6 +24,7 @@ Plug 'ycm-core/YouCompleteMe', { 'do': './install.py' }
 call plug#end()
 
 nmap <F3> :NERDTreeToggle<CR>
+nmap <F6> :Autoformat<CR>
 nmap <F8> :TagbarToggle<CR>
 nmap <C-n> :bn<CR>
 nmap <C-p> :bp<CR>
@@ -54,17 +56,23 @@ set enc=utf8
 "set fileencodings=utf-8,big5,utf-bom,iso8859-1
 "set hls
 set laststatus=2
+set ruler
 set nu
 set showmatch
 "set expandtab shiftwidth=4 tabstop=4
 set binary
 set noeol
 set nocompatible
-set colorcolumn=80
+"set textwidth=80
+"set colorcolumn=81
 set tags=./tags,./TAGS,tags;~,TAGS;~
+
+highlight ColorColumn ctermbg=235 guibg=#2c2d27
 
 syntax on
 filetype plugin on
+
+let &colorcolumn="81,".join(range(121,999),",")
 
 "let g:airline_theme='simple'
 let g:airline_theme='murmur'
@@ -78,6 +86,12 @@ let g:vimtex_view_method='okular'
 let g:vimtex_quickfix_mode=0
 set conceallevel=1
 let g:tex_conceal='abdmg'
+
+let g:autoformat_autoindent = 0
+let g:autoformat_retab = 0
+let g:autoformat_remove_trailing_spaces = 0
+let g:formatdef_autopep8 = "'autopep8 - --max-line-length 120 --range '.a:firstline.' '.a:lastline"
+let g:formatters_python = ['autopep8']
 
 "g:vim_markdown_folding_disabled
 let mapleader=','
@@ -98,6 +112,7 @@ augroup END
 
 autocmd BufRead *.htm,*.html,*.jsx,*.js,*.json,*.vue set ai et sw=2 ts=2 softtabstop=2
 autocmd BufRead *.php,*.css,*.scss,*.py set ai et sw=4 ts=4 softtabstop=4
+"autocmd BufWrite *.py :Autoformat
 autocmd BufRead,BufWrite * if ! &bin | silent! %s/\s\+$//ge | endif " Remove any trailing whitespace that is in the file
 autocmd BufWritePost *.go silent! !ctags -R --exclude=.git* --exclude=docs --exclude=.idea --exclude=testdata --exclude=deploy --exclude=*.yaml --exclude=*.md --exclude=Makefile --exclude=go.* --exclude=*.json .
-autocmd BufWritePost *.py silent! !ctags -R --exclude=.git* --exclude=docs --exclude=etc --exclude=nvmedebs --exclude=python-wls --exclude=python-wheels --exclude=rdma-core-install --exclude=*.sh --exclude=*.pyc --exclude=*.yaml --exclude=*.md --exclude=Dockerfile* --exclude=*.ini --exclude=*.json --exclude=*.md --exclude=*.txt .
+autocmd BufWritePost *.py silent! !ctags -R --exclude=.git* --exclude=docs --exclude=etc --exclude=nvmedebs --exclude=python-wls --exclude=python-wheels --exclude=rdma-core-install --exclude=*.sh --exclude=*.pyc --exclude=*.yaml --exclude=*.md --exclude=Dockerfile* --exclude=*.ini --exclude=*.json --exclude=*.md --exclude=*.txt --exclude=*.conf .
