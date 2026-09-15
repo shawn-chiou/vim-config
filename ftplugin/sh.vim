@@ -7,12 +7,8 @@ setlocal softtabstop=2
 setlocal expandtab
 
 " 語法檢查設置
-let g:syntastic_shell_checkers = ['shellcheck']
-let g:syntastic_shell_shellcheck_exec = 'shellcheck'  " 確保安裝了 shellcheck
-
-" 程式提示設置
-let g:deoplete#enable_at_startup = 1
-autocmd FileType sh setlocal omnifunc=deoplete#complete
+let g:syntastic_sh_checkers = ['shellcheck']  " 確保安裝了 shellcheck
+let g:syntastic_sh_shellcheck_args = '-x'
 
 " 格式化命令，使用 autoformat
 autocmd BufWritePre *.sh :Autoformat

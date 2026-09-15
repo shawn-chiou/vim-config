@@ -7,12 +7,7 @@ setlocal softtabstop=4
 setlocal expandtab
 
 " 語法檢查
-let g:syntastic_python_checkers = ['flake8']
-let g:syntastic_python_flake8_exec = 'flake8'  " 確保安裝了 flake8
-
-" 程式提示設置
-let g:deoplete#enable_at_startup = 1
-autocmd FileType python setlocal omnifunc=deoplete#complete
+let g:syntastic_python_checkers = ['flake8']  " 確保安裝了 flake8
 
 " 自動顯示補全選項
 setlocal completeopt=menuone,noinsert

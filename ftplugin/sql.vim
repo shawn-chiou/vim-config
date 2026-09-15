@@ -6,9 +6,6 @@ setlocal shiftwidth=4
 setlocal softtabstop=4
 setlocal expandtab
 
-" 語法檢查設置
-let g:syntastic_sql_checkers = ['sqlfluff']  " 確保安裝了 sqlfluff
-
 " 語法提示設置
 setlocal completeopt=menuone,noinsert
 

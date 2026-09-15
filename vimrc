@@ -15,21 +15,14 @@ Plug 'tpope/vim-fugitive'
 Plug 'preservim/tagbar'
 Plug 'brookhong/cscope.vim'
 Plug 'vim-autoformat/vim-autoformat'
+Plug 'vim-syntastic/syntastic', { 'for': ['sh', 'python'] }
 Plug 'ycm-core/YouCompleteMe', { 'do': './install.py --all' }
 
 " ====== Go ======
 Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries', 'for': 'go' }
 
-" ====== Bash ======
-Plug 'zshell/vim-shellcheck', { 'for': 'sh' }
-Plug 'vim-syntastic/syntastic', { 'for': 'sh' }
-Plug 'Shawnc2/vim-deoplete', { 'for': 'sh' }
-Plug 'z0mbix/vim-shfmt', { 'for': 'sh' }
-
 " ========= Python =========
 Plug 'vim-python/python-syntax', { 'for': 'python' }
-Plug 'vim-syntastic/syntastic', { 'for': 'python' }
-Plug 'Shawnc2/vim-deoplete', { 'for': 'python' }
 
 " ====== Markdown ======
 Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
@@ -41,9 +34,8 @@ Plug 'xuhdev/vim-latex-live-preview', { 'for': 'tex' }
 
 " ====== SQL ======
 Plug 'vim-scripts/SQLUtilities', { 'for': 'sql' }
-Plug 'vim-syntastic/syntastic', { 'for': 'sql' }
 
-" ====== SQL ======
+" ====== make/Makefile ======
 Plug 'tpope/vim-dispatch', { 'for': 'make' }
 
 "Plug 'junegunn/gv.vim'
@@ -118,6 +110,14 @@ let g:ycm_autoclose_preview_window_after_completion=1
 set completeopt=menu,menuone
 let g:ycm_add_preview_to_completeopt = 0
 let g:ycm_show_diagnostics_ui = 0
+
+" syntastic (statusline 交給 airline 的 syntastic extension 處理)
+let g:syntastic_enable_signs = 1
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+let g:syntastic_aggregate_errors = 1
 
 "let g:airline_theme='simple'
 let g:airline_theme='murmur'
