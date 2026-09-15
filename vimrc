@@ -174,8 +174,20 @@ let g:airline#extensions#tabline#formatter = 'default'
 " 否則沒有 \documentclass 的 .tex 會被判成 plaintex、tex.vim 完全不會載入
 let g:tex_flavor = 'latex'
 " vimtex 只讀 g:，不吃 b:（autoload/vimtex/options.vim 的 s:init_option）
-let g:vimtex_view_method = 'skim'
+" Skim 僅存在於 macOS，且 vimtex 的 skim viewer 是用 osascript 偵測的，
+" 在 Linux 上 <localleader>lv 會直接報「Skim is not installed!」
+let g:vimtex_view_method = has('mac') ? 'skim' : 'zathura'
 let g:vimtex_quickfix_mode = 0
+
+" vim-latex-live-preview 的預設 previewer 只找 evince/okular（兩者皆為 Linux），
+" macOS 不補這個變數就完全無法使用。它對已設定的值不做 executable() 檢查、
+" 而是直接丟進 shell，所以非 mac 只在 zathura 確實存在時才覆蓋，
+" 否則留給它自己去找 evince/okular 並在都沒有時報錯
+if has('mac')
+  let g:livepreview_previewer = 'open -a Skim'
+elseif executable('zathura')
+  let g:livepreview_previewer = 'zathura'
+endif
 
 let g:autoformat_autoindent = 0
 let g:autoformat_retab = 0
