@@ -69,7 +69,45 @@ nnoremap  <leader>ff :call CscopeFind('f', expand('<cword>'))<CR>
 " i: Find files #including this file
 nnoremap  <leader>fi :call CscopeFind('i', expand('<cword>'))<CR>
 
-nnoremap <F9> :terminal ++rows=15 claude<CR>
+" ====== Claude 終端機（F9 開關）======
+let s:claude_bufnr = 0
+
+function! s:ClaudeToggle() abort
+    " 是否已有執行中的 session（buffer 還在且 job 未結束）
+    let l:alive = s:claude_bufnr > 0 && bufexists(s:claude_bufnr)
+                \ && getbufvar(s:claude_bufnr, '&buftype') ==# 'terminal'
+                \ && term_getstatus(s:claude_bufnr) =~# 'running'
+
+    if l:alive
+        let l:winid = bufwinid(s:claude_bufnr)
+        if l:winid != -1
+            " 視窗開著 → 收起來，job 留在背景繼續跑
+            call win_gotoid(l:winid)
+            if winnr('$') > 1
+                close
+            elseif buflisted(bufnr('#')) && bufnr('#') != s:claude_bufnr
+                buffer #
+            else
+                enew
+            endif
+        else
+            " job 還在、只是視窗收起來了 → 叫回同一個 session
+            execute 'botright sbuffer ' . s:claude_bufnr
+            execute 'resize 15'
+            normal! i
+        endif
+        return
+    endif
+
+    " 沒有 session（或上次已結束）→ 重新啟動
+    botright terminal ++rows=15 ++kill=term claude
+    let s:claude_bufnr = bufnr('%')
+endfunction
+
+nnoremap <silent> <F9> :call <SID>ClaudeToggle()<CR>
+tnoremap <silent> <F9> <C-\><C-n>:call <SID>ClaudeToggle()<CR>
+
+" 在 terminal 中以 <Esc><Esc> 回到 Terminal-Normal 模式（捲動、複製）
 tnoremap <Esc><Esc> <C-\><C-n>
 
 set ai
@@ -154,8 +192,6 @@ endif
 "  autocmd FileType textile      call pencil#init()
 "  autocmd FileType text         call pencil#init({'wrap': 'hard'})
 "augroup END
-
-autocmd TerminalOpen * startinsert
 
 autocmd FocusGained,BufEnter,CursorHold,CursorHoldI * checktime
 autocmd BufRead *.htm,*.html,*.jsx,*.js,*.json,*.vue set ai et sw=2 ts=2 softtabstop=2
