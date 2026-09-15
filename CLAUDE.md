@@ -43,9 +43,22 @@ that language's section with the matching `for` key, so it only loads with the f
 Common/always-on plugins (airline, NERDTree, gitgutter, fugitive, tagbar, cscope.vim,
 vim-autoformat, YouCompleteMe) sit in the `====== common ======` block with no `for`.
 
-Global keys: `<F3>` NERDTree, `<F6>` Autoformat, `<F8>` Tagbar, `<F9>` terminal running
-`claude`, `<C-n>`/`<C-p>` buffer cycling, `<leader>f{s,g,d,c,t,e,f,i}` cscope queries.
-`mapleader` is `,`.
+Global keys: `<F3>` NERDTree, `<F6>` Autoformat, `<F8>` Tagbar, `<F9>` toggles a terminal
+running `claude`, `<C-n>`/`<C-p>` buffer cycling, `<leader>f{s,g,d,c,t,e,f,i}` cscope
+queries.
+
+`set nocompatible` and `let mapleader` sit at the very top of `vimrc`, before
+`plug#begin()`, and must stay there. `<leader>` is expanded when a mapping is *defined*,
+so a `mapleader` set further down silently binds every earlier mapping to the default
+`\` instead. That is what used to put the cscope maps on `\f*` and let `\l` shadow
+vimtex's whole `<localleader>l` prefix. `nocompatible` has to precede the plugin block
+for the same class of reason: `vim -u vimrc` starts compatible, and plugins using line
+continuations then fail with `E10`.
+
+`<F9>` calls `s:ClaudeToggle()`, which hides the window rather than wiping the buffer, so
+the claude session keeps running in the background; it only starts a new one once
+`term_getstatus()` reports the job finished. The `tnoremap` counterpart is what makes it
+closable from inside the terminal — without it the key is sent to claude as input.
 
 ### `ftplugin/*.vim` — per-filetype layer
 
@@ -64,7 +77,7 @@ Per-file responsibilities:
 | `go.vim` | 4, **noexpandtab** | vim-go, `:GoFmt` on write | `<leader>b/t/r` build/test/run |
 | `sql.vim` | 4, expandtab | Autoformat on write (no syntastic — see below) | (run maps commented out) |
 | `markdown.vim` | — | wrap/linebreak/spell | `<leader>p` MarkdownPreview |
-| `tex.vim` | 2, expandtab | vimtex, viewer `skim` (macOS; zathura line kept commented for Linux) | `<leader>l{l,k,v,c}` |
+| `tex.vim` | 2, expandtab | vimtex (options live in `vimrc`, not here) | vimtex's own `<localleader>l*` |
 | `make.vim` | 8, noexpandtab | vim-dispatch; Autoformat on write (no syntastic) | `<leader>m/c/t` make / clean / test |
 
 Global `autocmd BufRead` rules in `vimrc` also set indentation by extension for web files
@@ -102,9 +115,8 @@ Filetypes deliberately **without** syntastic:
   checker. `sqlfluff` stays as a formatting tool only.
 - **make** — syntastic has no `make` checker (`syntax_checkers/` has no `make/` directory).
 
-Verify what is actually active with `:SyntasticInfo` inside a real buffer. Note that
-`vim -es` (Ex mode) does not load plugins, so scripted checks must use
-`vim --not-a-term ... </dev/null`.
+Verify what is actually active with `:SyntasticInfo` inside a real buffer — see
+*Scripted checks* below for how to drive that non-interactively.
 
 ### Completion
 
@@ -113,6 +125,31 @@ YouCompleteMe (global, built with `./install.py --all`) is the **only** completi
 404 and was never installed; it has been removed along with its dead `g:deoplete#*` settings.
 Don't reintroduce deoplete: it is unmaintained, needs `nvim-yarp` + `vim-hug-neovim-rpc` +
 `pynvim` under plain Vim, and conflicts with YCM.
+
+YCM compiles against a specific Python, so **rebuild it after any Vim or Python upgrade**:
+
+```sh
+cd ~/.vim/plugged/YouCompleteMe && ./install.py --all
+```
+
+`install.py` needs `setuptools` in the interpreter Vim loads, or it silently degrades:
+`Building regex module failed. Falling back to re builtin.` and a watchdog warning about
+kqueue. Both are performance-only, but the fix is `brew install python-setuptools` — not
+`pip3 install`, because Homebrew's Python is `EXTERNALLY-MANAGED`.
+
+To check a build actually matches the running Vim, compare the interpreter Vim loads
+(`:py3 import sys; print(sys.version)`) against the compiled artifacts — all three must
+carry the same `cpython-3XX` tag:
+
+```sh
+ls ~/.vim/plugged/YouCompleteMe/third_party/ycmd/ycm_core*.so
+find ~/.vim/plugged/YouCompleteMe/third_party/ycmd/third_party/regex-build -name '*.so'
+find ~/.vim/plugged/YouCompleteMe/third_party/ycmd/third_party/watchdog_deps -name '_watchdog_fsevents*.so'
+```
+
+`:YcmDebugInfo` in a real buffer is the end-to-end check; the server logs it names should
+contain no `falling back` lines. A `No semantic completer exists for filetypes:
+['ycm_nofiletype']` error there is normal — it just means the buffer had no filetype.
 
 ### Formatting
 
@@ -132,11 +169,39 @@ for free. `z0mbix/vim-shfmt` was removed for exactly this reason — it only add
 are all `0` in `vimrc`, which disables vim-autoformat's fallback. A missing formatter
 binary therefore leaves the buffer untouched rather than silently re-indenting it.
 
+### Vim version and environment
+
+**vimtex requires Vim 9.2+** (`has('patch-9.2.0')`). On 9.1 it fails in a way that looks
+like a config bug rather than a version problem: its `ftplugin/tex.vim` sets
+`b:did_ftplugin = 1` *before* the version check, then `echoerr`s and `finish`es. So
+`vimtex#init()` never runs, every `:Vimtex*` command is missing, `b:vimtex` is unset, and
+`$VIMRUNTIME/ftplugin/tex.vim` is skipped too. Diagnose with `exists(':VimtexCompile')`
+rather than by reading the config.
+
+**A shell started from Vim's `:terminal` inherits `VIM` and `VIMRUNTIME`.** Since `<F9>`
+opens claude that way, a claude session outliving a Vim upgrade keeps pointing at the old
+runtime, and any `vim` run from it dies with
+`E484: Can't open file .../vim91/syntax/syntax.vim`. Restart the outer Vim, or prefix with
+`env -u VIMRUNTIME -u VIM`.
+
+### Scripted checks
+
+`vim -es` (Ex mode) loads no plugins, so it does not reflect a real session. `vim -u
+<file>` starts compatible, which this `vimrc` now corrects on its first line — but pass
+`-N` when sourcing any other file. Drive checks with
+`vim --not-a-term -c '<cmd>' -c 'qa!' <file> </dev/null` and collect output through
+`redir! > <path>` in a sourced script file rather than long `-c` strings, which are easy
+to mis-quote. Anything depending on `VimEnter` timers — YCM's startup in particular —
+cannot be verified this way at all; check those interactively.
+
 ### Known inconsistencies (verify before "fixing")
 
 - `vimrc.bak` and `*.swp` files are untracked leftovers, not part of the config.
 
 ## External tool prerequisites
+
+**Vim 9.2+** (vimtex's floor) with `+python3`, `+terminal`, `+timers` and `+conceal`.
+`python-setuptools` must be present in the interpreter Vim loads, for YCM's build.
 
 Beyond the README list (cmake, cscope, ctags, curl, gcc/g++, git, make, python 3.x, vim),
 the ftplugins assume `flake8`, `autopep8`, `shellcheck`, `shfmt`, `sqlfluff`, `gofmt`, and
@@ -148,7 +213,7 @@ a broken config, so check the binary before debugging the Vim side. All of the a
 installed via Homebrew on the current machine:
 
 ```sh
-brew install flake8 shellcheck shfmt autopep8 sqlfluff
+brew install flake8 shellcheck shfmt autopep8 sqlfluff python-setuptools
 ```
 
 Prefer `brew` over `pip3 install` for the Python-based tools: the formulae keep their own
