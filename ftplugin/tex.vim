@@ -5,20 +5,8 @@ setlocal expandtab
 setlocal wrap
 setlocal linebreak
 
-" VimTeX
-" For Linux
-"let b:vimtex_view_method = 'zathura'
-" For MacOS
-let b:vimtex_view_method = 'skim'
+" 編譯/檢視/清理一律使用 vimtex 原生對應（g:vimtex_mappings_prefix = '<localleader>l'）：
+"   <localleader>ll 編譯   <localleader>lk 停止   <localleader>lv 檢視   <localleader>lc 清理
+" 完整清單：:nmap <localleader>l
 
-" 編譯
-nnoremap <buffer> <leader>ll :VimtexCompile<CR>
-
-" 停止編譯
-nnoremap <buffer> <leader>lk :VimtexStop<CR>
-
-" 查看 PDF
-nnoremap <buffer> <leader>lv :VimtexView<CR>
-
-" 清理 auxiliary files
-nnoremap <buffer> <leader>lc :VimtexClean<CR>
+let b:undo_ftplugin = 'setlocal tabstop< shiftwidth< expandtab< wrap< linebreak< conceallevel<'

@@ -169,12 +169,13 @@ let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#formatter = 'default'
 
-"let g:tex_flavor='latex'
-""let g:vimtex_view_method='zathura'
-"let g:vimtex_view_method='okular'
-"let g:vimtex_quickfix_mode=0
-"set conceallevel=1
-"let g:tex_conceal='abdmg'
+" ====== Tex ======
+" g:tex_flavor 由 filetype 偵測讀取，必須在 ftplugin 執行前就設好，
+" 否則沒有 \documentclass 的 .tex 會被判成 plaintex、tex.vim 完全不會載入
+let g:tex_flavor = 'latex'
+" vimtex 只讀 g:，不吃 b:（autoload/vimtex/options.vim 的 s:init_option）
+let g:vimtex_view_method = 'skim'
+let g:vimtex_quickfix_mode = 0
 
 let g:autoformat_autoindent = 0
 let g:autoformat_retab = 0
@@ -201,6 +202,8 @@ endif
 autocmd FocusGained,BufEnter,CursorHold,CursorHoldI * checktime
 autocmd BufRead *.htm,*.html,*.jsx,*.js,*.json,*.vue set ai et sw=2 ts=2 softtabstop=2
 autocmd BufRead *.php,*.css,*.scss,*.py set ai et sw=4 ts=4 softtabstop=4
+" 晚於所有 ftplugin 執行，否則會被後續載入的 syntax/ftplugin 蓋回 0
+autocmd FileType tex setlocal conceallevel=2
 "autocmd BufWrite *.py :Autoformat
 autocmd BufRead,BufWrite * if ! &bin | silent! %s/\s\+$//ge | endif " Remove any trailing whitespace that is in the file
 autocmd BufWritePost *.go silent! !ctags -R --exclude=.git* --exclude=docs --exclude=.idea --exclude=testdata --exclude=deploy --exclude=*.yaml --exclude=*.md --exclude=Makefile --exclude=go.* --exclude=*.json .
