@@ -6,6 +6,7 @@ endif
 
 call plug#begin('~/.vim/plugged')
 
+" ====== common ======
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'scrooloose/nerdTree'
@@ -15,19 +16,39 @@ Plug 'preservim/tagbar'
 Plug 'brookhong/cscope.vim'
 Plug 'vim-autoformat/vim-autoformat'
 Plug 'ycm-core/YouCompleteMe', { 'do': './install.py --all' }
-"Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries' }
-"Plug 'prabirshrestha/vim-lsp'
-"Plug 'mattn/vim-lsp-settings'
 
-"Plug 'dense-analysis/ale'
+" ====== Go ======
+Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries', 'for': 'go' }
+
+" ====== Bash ======
+Plug 'zshell/vim-shellcheck', { 'for': 'sh' }
+Plug 'vim-syntastic/syntastic', { 'for': 'sh' }
+Plug 'Shawnc2/vim-deoplete', { 'for': 'sh' }
+Plug 'z0mbix/vim-shfmt', { 'for': 'sh' }
+
+" ========= Python =========
+Plug 'vim-python/python-syntax', { 'for': 'python' }
+Plug 'vim-syntastic/syntastic', { 'for': 'python' }
+Plug 'Shawnc2/vim-deoplete', { 'for': 'python' }
+
+" ====== Markdown ======
+Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
+Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': 'markdown' }
+
+" ====== Tex ======
+Plug 'lervag/vimtex', { 'for': 'tex' }
+Plug 'xuhdev/vim-latex-live-preview', { 'for': 'tex' }
+
+" ====== SQL ======
+Plug 'vim-scripts/SQLUtilities', { 'for': 'sql' }
+Plug 'vim-syntastic/syntastic', { 'for': 'sql' }
+
+" ====== SQL ======
+Plug 'tpope/vim-dispatch', { 'for': 'make' }
+
 "Plug 'junegunn/gv.vim'
-"Plug 'rhysd/vim-lsp-ale'
-"Plug 'lervag/vimtex'
 "Plug 'vim-scripts/vim-pencil'
 "Plug 'rbong/vim-flog'
-"Plug 'plasticboy/vim-markdown'
-"Plug 'xuhdev/vim-latex-live-preview', { 'for': 'tex' }
-"Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
 
 call plug#end()
 
@@ -36,11 +57,6 @@ nmap <F6> :Autoformat<CR>
 nmap <F8> :TagbarToggle<CR>
 nmap <C-n> :bn<CR>
 nmap <C-p> :bp<CR>
-"nmap gd :ALEGoToDefinition<CR>
-"nmap gr :ALEFindReferences<CR>
-"nmap K :ALEHover<CR>
-"nmap <silent> <C-k> <Plug>(ale_previous_wrap)
-"nmap <silent> <C-j> <Plug>(ale_next_wrap)
 
 nnoremap <leader>fa :call CscopeFindInteractive(expand('<cword>'))<CR>
 nnoremap <leader>l :call ToggleLocationList()<CR>
@@ -61,7 +77,11 @@ nnoremap  <leader>ff :call CscopeFind('f', expand('<cword>'))<CR>
 " i: Find files #including this file
 nnoremap  <leader>fi :call CscopeFind('i', expand('<cword>'))<CR>
 
+nnoremap <F9> :terminal ++rows=15 claude<CR>
+tnoremap <Esc><Esc> <C-\><C-n>
+
 set ai
+set autoread
 set background=dark
 "set cindent
 set cursorline
@@ -82,12 +102,11 @@ set nocompatible
 set wildmenu
 set wildmode=longest:list,full
 set tags=./tags,./TAGS,tags;~,TAGS;~
+set hidden
 
 highlight ColorColumn ctermbg=235 guibg=#2c2d27
 
-filetype on
-filetype indent on
-filetype plugin on
+filetype plugin indent on
 syntax on
 
 let &rtp .= ',' . expand( '<sfile>:p:h' )
@@ -99,97 +118,6 @@ let g:ycm_autoclose_preview_window_after_completion=1
 set completeopt=menu,menuone
 let g:ycm_add_preview_to_completeopt = 0
 let g:ycm_show_diagnostics_ui = 0
-
-"let g:ale_vim_vimls_config = {
-"\   'vim': {
-"\     'iskeyword': '@,48-57,_,192-255,-#',
-"\     'vimruntime': '',
-"\     'runtimepath': '',
-"\     'diagnostic': {
-"\       'enable': v:true
-"\     },
-"\     'indexes': {
-"\       'runtimepath': v:true,
-"\       'gap': 100,
-"\       'count': 3,
-"\       'projectRootPatterns' : ['.git', 'autoload', 'plugin']
-"\     },
-"\     'suggest': {
-"\       'fromVimruntime': v:true,
-"\       'fromRuntimepath': v:false
-"\     },
-"\   }
-"\}
-"let g:ale_vim_vimls_executable = 'vim-language-server'
-"let g:ale_vim_vimls_use_global = 0
-"let g:ale_vim_vint_executable = 'vint'
-"let g:ale_vim_vint_show_style_issues = 1
-"let g:ale_fixers = {
-"\   '*': ['remove_trailing_lines', 'trim_whitespace'],
-"\   'bash': ['shfmt'],
-"\   'python': ['autoimport', 'autoflake', 'autopep8', 'reorder-python-imports', 'yapf', 'ruff'],
-"\   'go': ['gopls'],
-"\   'javascript': ['prettier', 'eslint'],
-"\   'json': ['prettier'],
-"\}
-"let g:ale_set_balloons=1
-"let g:ale_completion_enabled=1
-"let g:ale_floating_window_border = ['│', '─', '╭', '╮', '╯', '╰', '│', '─']
-"let g:ale_floating_window_border = repeat([''], 8)
-"let g:ale_linter_aliases = {'vue': ['vue', 'javascript']}
-"let g:ale_linters = {
-"\   'bash': ['bashate', 'cspell', 'shell', 'shellcheck'],
-"\   'python': ['flake8', 'pylint', 'ruff'],
-"\   'go': ['gopls'],
-"\   'vue': ['eslint', 'vls'],
-"\   'json': ['prettier'],
-"\}
-"let g:ale_sh_bashate_executable = 'bashate'
-"let g:ale_sh_bashate_options = ''
-""let g:ale_sh_language_server_executable = 'bash-language-server'
-""let g:ale_sh_language_server_use_global = 0
-"let g:ale_sh_shell_default_shell = 'bash'
-"let g:ale_sh_shellcheck_change_directory = 1
-"let g:ale_sh_shellcheck_dialect = 'auto'
-"let g:ale_sh_shellcheck_exclusions = ''
-"let g:ale_sh_shellcheck_executable = 'shellcheck'
-"let g:ale_sh_shellcheck_options = ''
-
-"autocmd User lsp_setup call lsp#register_server({
-"    \ 'name': 'pyls-debug',
-"    \ 'cmd': ["nc", "localhost", "5007"],
-"    \ 'allowlist': ['python'],
-"    \ })
-
-"if executable('bash-language-server')
-"  au User lsp_setup call lsp#register_server({
-"        \ 'name': 'bash-language-server',
-"        \ 'cmd': {server_info->[&shell, &shellcmdflag, 'bash-language-server start']},
-"        \ 'allowlist': ['sh', 'ash', 'bash'],
-"        \ })
-"endif
-"
-"let g:ycm_language_server =
-"            \ [
-"            \   {
-"            \       'name': 'bash',
-"            \       'cmdline': [ 'bash-language-server', 'start' ],
-"            \       'filetypes': [ 'sh' ],
-"            \   }
-"            \ ]
-
-"augroup LspGo
-"  au!
-"  autocmd User lsp_setup call lsp#register_server({
-"      \ 'name': 'go-lang',
-"      \ 'cmd': {server_info->['gopls']},
-"      \ 'whitelist': ['go'],
-"      \ })
-"  autocmd FileType go setlocal omnifunc=lsp#complete
-"  "autocmd FileType go nmap <buffer> gd <plug>(lsp-definition)
-"  "autocmd FileType go nmap <buffer> ,n <plug>(lsp-next-error)
-"  "autocmd FileType go nmap <buffer> ,p <plug>(lsp-previous-error)
-"augroup END
 
 "let g:airline_theme='simple'
 let g:airline_theme='murmur'
@@ -227,6 +155,9 @@ endif
 "  autocmd FileType text         call pencil#init({'wrap': 'hard'})
 "augroup END
 
+autocmd TerminalOpen * startinsert
+
+autocmd FocusGained,BufEnter,CursorHold,CursorHoldI * checktime
 autocmd BufRead *.htm,*.html,*.jsx,*.js,*.json,*.vue set ai et sw=2 ts=2 softtabstop=2
 autocmd BufRead *.php,*.css,*.scss,*.py set ai et sw=4 ts=4 softtabstop=4
 "autocmd BufWrite *.py :Autoformat

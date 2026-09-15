@@ -1,14 +1,3 @@
-"automated installation of vimplug if not installed
-if empty(glob('~/.vim/autoload/plug.vim'))
-    silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-    autocmd VimEnter * PlugInstall --sync | source ~/.vimrc
-endif
-
-call plug#begin('~/.vim/plugged')
-Plug 'vim-syntastic/syntastic'
-Plug 'Shawnc2/vim-deoplete'
-call plug#end()
-
 " 啟用語法高亮
 setlocal syntax=python
 
@@ -16,11 +5,6 @@ setlocal syntax=python
 setlocal shiftwidth=4
 setlocal softtabstop=4
 setlocal expandtab
-setlocal autoindent
-setlocal smartindent
-
-" 啟用行號
-setlocal number
 
 " 語法檢查
 let g:syntastic_python_checkers = ['flake8']
@@ -36,6 +20,8 @@ setlocal completeopt=menuone,noinsert
 " 排版設置
 let g:formatdef_autopep8 = "'autopep8 - --max-line-length 120 --range '.a:firstline.' '.a:lastline"
 let g:formatters_python = ['autopep8']
+
+nnoremap <buffer> <leader>r :!python3 %<CR>
 
 " 設置格式化命令，使用 autoformat
 autocmd BufWritePre *.py Autoformat
