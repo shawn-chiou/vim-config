@@ -100,14 +100,14 @@ function! s:ClaudeToggle() abort
         else
             " job 還在、只是視窗收起來了 → 叫回同一個 session
             execute 'botright sbuffer ' . s:claude_bufnr
-            execute 'resize 15'
+            execute 'resize 30'
             normal! i
         endif
         return
     endif
 
     " 沒有 session（或上次已結束）→ 重新啟動
-    botright terminal ++rows=15 ++kill=term claude
+    botright terminal ++rows=30 ++kill=term claude
     let s:claude_bufnr = bufnr('%')
 endfunction
 
