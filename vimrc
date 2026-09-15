@@ -1,3 +1,10 @@
+" 必須早於 plug#begin()：plugin 內的續行符（\）在 compatible 模式下會噴 E10
+set nocompatible
+
+" <leader> 在對應「定義當下」就展開，因此 mapleader 必須早於所有 <leader> 對應
+" 與 plugin 載入，否則那些對應會綁到預設的 \ 而非 ,
+let mapleader=','
+
 "automated installation of vimplug if not installed
 if empty(glob('~/.vim/autoload/plug.vim'))
     silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
@@ -126,7 +133,6 @@ set showmatch
 "set expandtab shiftwidth=4 tabstop=4
 set binary
 set noeol
-set nocompatible
 "set textwidth=80
 "set colorcolumn=81
 set wildmenu
@@ -177,7 +183,6 @@ let g:autoformat_remove_trailing_spaces = 0
 "let g:formatters_python = ['autopep8']
 
 "g:vim_markdown_folding_disabled
-let mapleader=','
 if exists(":Tabularize")
   nmap <Leader>a= :Tabularize /=<CR>
   vmap <Leader>a= :Tabularize /=<CR>
