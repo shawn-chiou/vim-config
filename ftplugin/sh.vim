@@ -1,6 +1,3 @@
-" 啟用語法高亮
-setlocal syntax=sh
-
 " 設定自動縮排
 setlocal shiftwidth=2
 setlocal softtabstop=2

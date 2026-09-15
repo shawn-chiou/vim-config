@@ -1,6 +1,3 @@
-" 啟用語法高亮
-setlocal syntax=go
-
 " 設定自動縮排
 setlocal shiftwidth=4
 setlocal softtabstop=4
